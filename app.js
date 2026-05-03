@@ -602,6 +602,7 @@ async function step1Handler(req, res) {
 
     console.log(`\n===========================================`);
     console.log(`[REAL OTP SYSTEM] OTP requested for ${username}`);
+    console.log(`[DEV OVERRIDE] OTP Code is: ${generatedOTP}`);
     console.log(`===========================================\n`);
 
     if (mailTransporter && mailTransporter.options.auth.user !== 'your.real.email@gmail.com') {
