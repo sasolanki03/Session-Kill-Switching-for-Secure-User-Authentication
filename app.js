@@ -198,7 +198,7 @@ async function setActiveSession(username, sessionID, req) {
   const metadata = {
     username,
     sessionID,
-    ip: req.ip || req.socket.remoteAddress,
+    ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : (req.ip || req.socket.remoteAddress),
     ua: req.headers["user-agent"],
     lastActivity: new Date().toISOString()
   };
@@ -225,7 +225,7 @@ async function deleteActiveSession(username, sessionID) {
 }
 
 async function addLog(action, username, req, details) {
-  const ip = req.ip || req.socket.remoteAddress;
+  const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : (req.ip || req.socket.remoteAddress);
   const geo = geoip.lookup(ip) || { country: "Local", city: "Local" };
   const log = {
     time: new Date().toISOString(),
@@ -624,7 +624,7 @@ async function step1Handler(req, res) {
         if (err) return res.status(500).json({ error: "Session Error" });
 
         req.session.user = username;
-        const ip = req.ip || req.socket.remoteAddress;
+        const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : (req.ip || req.socket.remoteAddress);
         const ua = req.headers["user-agent"];
         req.session.clientIP = ip;
         req.session.userAgent = ua;
@@ -683,7 +683,7 @@ app.post("/login/step2", async (req, res) => {
     req.session.user = pendingUser;
 
     // Bind Fingerprint
-    const ip = req.ip || req.socket.remoteAddress;
+    const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : (req.ip || req.socket.remoteAddress);
     const ua = req.headers["user-agent"];
     req.session.clientIP = ip;
     req.session.userAgent = ua;
@@ -737,7 +737,7 @@ async function secureMiddleware(req, res, next) {
   const username = req.session.user;
 
   // Hijack Prevention Logic Setup
-  const currentIP = req.ip || req.socket.remoteAddress;
+  const currentIP = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0].trim() : (req.ip || req.socket.remoteAddress);
   const currentUA = req.headers["user-agent"];
 
   const sendHijackAlert = async (reason) => {
