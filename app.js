@@ -13,9 +13,22 @@ const admin = require("firebase-admin");
 const xss = require("xss");
 const asyncHandler = require("express-async-handler");
 const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 
-// Initialize Resend API (Using environment variable)
+// Initialize Resend API (For Cloud Hosting)
 const resend = new Resend(process.env.RESEND_API_KEY || "re_123456789");
+
+// Initialize Nodemailer (For Local/Offline SMTP)
+let mailTransporter = null;
+if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+  mailTransporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+}
 
 // Firebase Cloud Database Setup
 let dbFirestore = null;
@@ -606,6 +619,13 @@ async function step1Handler(req, res) {
         subject: `Your Secure Bank OTP: ${generatedOTP}`,
         text: `Do not share this code with anyone. Your OTP is: ${generatedOTP}. It expires in 5 minutes.`
       }).catch(err => console.log('Failed to send Resend OTP email:', err.message));
+    } else if (mailTransporter && mailTransporter.options.auth.user !== 'your.real.email@gmail.com') {
+      mailTransporter.sendMail({
+        from: '"Secure Bank OTP" <noreply@securebank.cloud>',
+        to: user.email,
+        subject: `Your Secure Bank OTP: ${generatedOTP}`,
+        text: `Do not share this code with anyone. Your OTP is: ${generatedOTP}. It expires in 5 minutes.`
+      }).catch(err => console.log('Failed to send local Nodemailer OTP email:', err.message));
     }
 
     addLog("OTP_SENT", username, req, "OTP generated and sent to device");
@@ -751,6 +771,13 @@ async function secureMiddleware(req, res, next) {
           subject: `⚠️ URGENT: Unauthorized Access Attempt on your account`,
           text: `Hello ${username},\n\nWe detected a hijack attempt on your active session.\nReason: ${reason}\nIP Address: ${currentIP}\nDevice: ${currentUA}\n\nYour session was kept safe, but please ensure your device is secure.\n\nSecure Bank Security Team`
         }).catch(err => console.log('Error sending Resend email', err.message));
+      } else if (mailTransporter && mailTransporter.options.auth.user !== 'your.real.email@gmail.com') {
+        mailTransporter.sendMail({
+          from: '"Secure Bank Security" <security@securebank.test>',
+          to: userObj.email,
+          subject: `⚠️ URGENT: Unauthorized Access Attempt on your account`,
+          text: `Hello ${username},\n\nWe detected a hijack attempt on your active session.\nReason: ${reason}\nIP Address: ${currentIP}\nDevice: ${currentUA}\n\nYour session was kept safe, but please ensure your device is secure.\n\nSecure Bank Security Team`
+        }).catch(err => console.log('Error sending local Nodemailer email', err.message));
       }
     }
   };
