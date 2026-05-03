@@ -9,19 +9,13 @@ const helmet = require("helmet");
 const geoip = require("geoip-lite");
 const { csrfSync } = require("csrf-sync");
 const cookieParser = require("cookie-parser");
-const nodemailer = require("nodemailer");
 const admin = require("firebase-admin");
 const xss = require("xss");
 const asyncHandler = require("express-async-handler");
+const { Resend } = require("resend");
 
-// real SMTP configuration for free Email OTPs
-let mailTransporter = nodemailer.createTransport({
-  service: 'gmail', // Use free Gmail SMTP or any standard free provider
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
-});
+// Initialize Resend API (Using environment variable)
+const resend = new Resend(process.env.RESEND_API_KEY || "re_123456789");
 
 // Firebase Cloud Database Setup
 let dbFirestore = null;
@@ -605,13 +599,13 @@ async function step1Handler(req, res) {
     console.log(`[DEV OVERRIDE] OTP Code is: ${generatedOTP}`);
     console.log(`===========================================\n`);
 
-    if (mailTransporter && mailTransporter.options.auth.user !== 'your.real.email@gmail.com') {
-      mailTransporter.sendMail({
-        from: '"Secure Bank OTP" <noreply@securebank.cloud>',
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_123456789') {
+      resend.emails.send({
+        from: 'Secure Bank <onboarding@resend.dev>',
         to: user.email,
         subject: `Your Secure Bank OTP: ${generatedOTP}`,
         text: `Do not share this code with anyone. Your OTP is: ${generatedOTP}. It expires in 5 minutes.`
-      }).catch(err => console.log('Failed to send real OTP email:', err.message));
+      }).catch(err => console.log('Failed to send Resend OTP email:', err.message));
     }
 
     addLog("OTP_SENT", username, req, "OTP generated and sent to device");
@@ -750,13 +744,13 @@ async function secureMiddleware(req, res, next) {
       userObj.hijackAttempts[req.sessionID] = (userObj.hijackAttempts[req.sessionID] || 0) + 1;
       await saveUser(username, userObj);
 
-      if (mailTransporter && mailTransporter.options.auth.user !== 'your.real.email@gmail.com') {
-        mailTransporter.sendMail({
-          from: '"Secure Bank Security" <security@securebank.test>',
+      if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_123456789') {
+        resend.emails.send({
+          from: 'Secure Bank Security <onboarding@resend.dev>',
           to: userObj.email,
           subject: `⚠️ URGENT: Unauthorized Access Attempt on your account`,
           text: `Hello ${username},\n\nWe detected a hijack attempt on your active session.\nReason: ${reason}\nIP Address: ${currentIP}\nDevice: ${currentUA}\n\nYour session was kept safe, but please ensure your device is secure.\n\nSecure Bank Security Team`
-        }).catch(err => console.log('Error sending real email', err.message));
+        }).catch(err => console.log('Error sending Resend email', err.message));
       }
     }
   };
