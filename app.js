@@ -40,6 +40,9 @@ try {
 
 
 const app = express();
+// MUST trust the reverse proxy on Render.com so it recognizes HTTPS and sends secure cookies
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 4000;
 
 /* ===============================
