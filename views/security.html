@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | Active Defense Array</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .page-hero {
+            background-image: linear-gradient(to right, rgba(2, 6, 23, 0.95), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2670&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 160px 20px 100px 20px;
+            text-align: center;
+            border-bottom: 1px solid #1e293b;
+        }
+        .page-hero h1 { font-size: 64px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px; }
+        .page-hero p { font-size: 22px; color: #cbd5e1; max-width: 800px; margin: 0 auto; line-height: 1.6;}
+    </style>
+</head>
+<body>
+
+<nav class="navbar relative z-50">
+    <a href="/" class="logo" style="display:flex; align-items:center;">
+        <img src="/images/logo.png" class="logo-img" alt="Secure Bank Logo">
+        SECURE<span>BANK</span>
+    </a>
+    <div class="nav-links">
+        <a href="/about">About</a>
+        <a href="/services">Services</a>
+        <a href="/business">Enterprise</a>
+        <a href="/security" style="color: #2563eb;">Security</a>
+        <a href="/login" class="btn-outline">Sign In</a>
+        <a href="/open-account" class="btn-primary" style="box-shadow: 0 4px 14px 0 rgba(37,99,235,0.39);">Open Account</a>
+    </div>
+</nav>
+
+<div class="page-hero">
+    <div class="hidden-scroll">
+        <h1 style="font-size: 54px;">Active Defense & Cryptography</h1>
+        <p>A deep dive into the engineering behind our patented zero-trust connection protocol.</p>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 50px;">
+    <div class="hidden-scroll delay-1" style="text-align: center; max-width: 800px; margin: 0 auto 60px auto;">
+        <h2 style="font-size: 36px; color: #0f172a; margin-bottom: 20px;">We Assume the Breach.</h2>
+        <p style="color: #475569; font-size: 18px; line-height: 1.8;">
+            Unlike legacy banking institutions that rely on firewalls protecting a soft interior, our systems operate on an absolute zero-trust framework. Every endpoint telemetry packet is hostile until verified. 
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-bottom: 80px;">
+        <div class="card hidden-scroll delay-2" style="background:#0f172a; color:white; border: 1px solid #334155;">
+            <h3 style="color:#38bdf8; border-bottom: 1px solid #1e293b; padding-bottom: 15px; margin-bottom:20px;">Session Kill-Switch™</h3>
+            <p style="color:#94a3b8; font-size:15px; line-height: 1.7; margin-bottom:20px;">
+                Our core innovation. We pair your authenticated JWT session cookie with high-fidelity analytics including IP, User-Agent strings, and canvas fingerprinting.
+            </p>
+            <p style="color:#94a3b8; font-size:15px; line-height: 1.7;">
+                If a bad actor steals your cookie via XSS or physical theft and attempts to use it elsewhere, our middleware <strong>drops their connection and logs the IP</strong> without destroying your legitimate active session.
+            </p>
+        </div>
+        <div class="hidden-scroll delay-3">
+            <h3 style="font-size: 28px; margin-bottom: 20px; color:#0f172a;">Real-Time Threat Blocking</h3>
+            <ul style="color:#475569; line-height: 2; font-size:16px;">
+                <li>🔒 Over 500,000 automated bots blocked daily.</li>
+                <li>⚡ Millisecond execution time on telemetry diff checks.</li>
+                <li>📨 Instant SMTP payload alerts sent to your encrypted inbox upon failure.</li>
+                <li>❌ Non-destructive session drops: the attacker fails, you keep working.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div class="footer-grid">
+        <div>
+            <div class="logo" style="color:white; margin-bottom: 15px; display:flex; align-items:center;">
+                <img src="/images/logo.png" class="logo-img" alt="Logo">
+                SECURE<span>BANK</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Institutional grade banking protected by continuous active threat monitoring and zero-trust verification.</p>
+        </div>
+        <div>
+            <h4>Products</h4>
+            <div class="footer-links">
+                <a href="/services">Checking & Savings</a>
+                <a href="/business">Enterprise Treasury</a>
+                <a href="/security">Active Defense API</a>
+            </div>
+        </div>
+        <div>
+            <h4>Company</h4>
+            <div class="footer-links">
+                <a href="/about">About Us</a>
+                <a href="/contact">Location Branches</a>
+                <a href="/login">Secure Login</a>
+            </div>
+        </div>
+        <div>
+            <h4>Legal</h4>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Security Alerts</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Secure Bank Corporation. All rights reserved.</span>
+        <span>FDIC Insured | Equal Housing Lender</span>
+    </div>
+</footer>
+
+<script src="/js/animations.js"></script>
+</body>
+</html>

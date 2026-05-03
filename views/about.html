@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | About Our Legacy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .hero {
+            background-image:
+                linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95)),
+                url('https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?q=80&w=2670&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            padding: 160px 20px 100px 20px;
+            text-align: center;
+        }
+
+        .timeline-container {
+            max-width: 800px;
+            margin: 80px auto;
+            position: relative;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        /* Zigzag Connectors */
+        .timeline-connector {
+            position: absolute;
+            height: 2px;
+            background: #cbd5e1;
+            width: 5%;
+            top: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-connector {
+            left: 45%;
+        }
+
+        .timeline-item:nth-child(even) .timeline-connector {
+            right: 45%;
+        }
+
+        .timeline-content {
+            width: 45%;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+            border-color: #93c5fd;
+        }
+
+        .timeline-content h3 {
+            margin: 10px 0;
+            font-size: 24px;
+            color: #0f172a;
+            transition: all 0.5s ease;
+        }
+
+        /* The requested text background color change effect */
+        .timeline-content:hover h3 {
+            background: linear-gradient(90deg, #2563eb, #8b5cf6, #ec4899);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 0 4px #eff6ff;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 10px;
+        }
+
+        .team-member {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+
+        .team-member img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .team-info {
+            padding: 30px;
+        }
+
+        .team-info h4 {
+            font-size: 22px;
+            color: #0f172a;
+            margin: 0 0 5px 0;
+        }
+
+        .team-info p.title {
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0 0 15px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .team-info p.bio {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar relative z-50">
+        <a href="/" class="logo" style="display:flex; align-items:center;">
+            <img src="/images/logo.png" class="logo-img" alt="Secure Bank Logo">
+            SECURE<span>BANK</span>
+        </a>
+        <div class="nav-links">
+            <a href="/about" style="color: #2563eb;">About</a>
+            <a href="/services">Services</a>
+            <a href="/business">Enterprise</a>
+            <a href="/security">Security</a>
+            <a href="/login" class="btn-outline">Sign In</a>
+            <a href="/open-account" class="btn-primary" style="box-shadow: 0 4px 14px 0 rgba(37,99,235,0.39);">Open
+                Account</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hidden-scroll delay-1">
+            <h1 style="font-size: 72px; font-weight: 900; letter-spacing: -2px; margin-bottom: 20px;">Built by
+                Cryptographers.<br>Trusted by Billions.</h1>
+            <p style="font-size: 22px; color: #94a3b8; max-width: 800px; margin: 0 auto; line-height: 1.6;">We are
+                tearing down legacy financial systems to build the world's first mathematically provable, zero-trust
+                banking environment.</p>
+        </div>
+    </div>
+
+    <div class="container" style="padding: 100px 20px;">
+        <div class="hidden-scroll text-center" style="max-width: 800px; margin: 0 auto 80px auto;">
+            <h2 style="font-size: 42px; color: #0f172a; font-weight: 900; letter-spacing: -1.5px; margin-bottom: 20px;">
+                Our Defensive Paradigm</h2>
+            <p style="font-size: 18px; color: #64748b; line-height: 1.8;">Finance is war. Every second, millions of
+                botnets crawl the web searching for exposed session tokens. Secure Bank was created with a single,
+                unyielding mandate: protect the capital connection at the transport layer, utilizing active threat
+                tracking and Kill-Switch logic to sever unauthorized requests instantly.</p>
+        </div>
+
+        <!-- Timeline Expansion -->
+        <div class="timeline-container">
+            <div class="timeline-item hidden-scroll delay-1">
+                <div class="timeline-content">
+                    <span style="color: #2563eb; font-weight: 800; font-size: 20px;">2024</span>
+                    <h3>The Genesis Protocol</h3>
+                    <p style="color: #64748b; line-height: 1.6;">Our founders, elite cybersecurity operators,
+                        successfully engineered the proprietary Kill-Switch™ algorithm to combat the rising tide of CSRF
+                        and hijacked cookies stealing corporate assets.</p>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-dot"></div>
+                <div style="width: 45%;"></div>
+            </div>
+
+            <div class="timeline-item hidden-scroll delay-2">
+                <div class="timeline-content">
+                    <span style="color: #2563eb; font-weight: 800; font-size: 20px;">2025</span>
+                    <h3>$10B Inbound Capital</h3>
+                    <p style="color: #64748b; line-height: 1.6;">Upon deploying our Zero-Trust architecture in beta,
+                        high-net-worth individuals and enterprise corporations migrated over $10 Billion purely on the
+                        reliability of our network defense.</p>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-dot"></div>
+                <div style="width: 45%;"></div>
+            </div>
+
+            <div class="timeline-item hidden-scroll delay-3">
+                <div class="timeline-content">
+                    <span style="color: #2563eb; font-weight: 800; font-size: 20px;">2026</span>
+                    <h3>Global Rollout</h3>
+                    <p style="color: #64748b; line-height: 1.6;">Now operating physically decentralized servers
+                        globally, Secure Bank guarantees 0ms threat latency anywhere in the world, locking down capital
+                        flows across all continents.</p>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-dot"></div>
+                <div style="width: 45%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        style="background: #f8fafc; padding: 120px 20px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <div class="container">
+            <h2 class="hidden-scroll"
+                style="text-align: center; font-size: 42px; font-weight: 900; letter-spacing: -1.5px; color:#0f172a; margin-bottom: 20px;">
+                The Executive Tribunal</h2>
+            <p class="hidden-scroll delay-1"
+                style="text-align: center; color: #64748b; font-size: 18px; margin-bottom: 0px;">Composed of the most
+                brilliant minds in cryptography, intelligence, and tier-1 finance.</p>
+
+            <div class="team-grid">
+                <div class="team-member hidden-scroll delay-1">
+                    <img src="/images/shivani.png" alt="Shivani Solanki">
+                    <div class="team-info">
+                        <h4>Shivani Solanki</h4>
+                        <p class="title">Chief Executive Officer & Founder</p>
+                        <p class="bio">Former intelligence operative and lead architect of the Kill-Switch™ protocol.
+                            Driven by the mission of mathematical certainty in financial trust.</p>
+                    </div>
+                </div>
+
+                <div class="team-member hidden-scroll delay-2">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574&auto=format&fit=crop"
+                        alt="Marcus Vanguard">
+                    <div class="team-info">
+                        <h4>Marcus Vanguard</h4>
+                        <p class="title">Chief Security Architect</p>
+                        <p class="bio">Specializes in zero-day exploit prevention and secure infrastructure scaling.
+                            Marcus oversees the global data node array and cryptographic firewalls.</p>
+                    </div>
+                </div>
+
+                <div class="team-member hidden-scroll delay-3">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop"
+                        alt="Elena Thorne">
+                    <div class="team-info">
+                        <h4>Elena Thorne</h4>
+                        <p class="title">Head of Cryptographic Ops</p>
+                        <p class="bio">A pioneer in quantum-resistant encryption. Elena ensures that every transaction
+                            processed by Secure Bank is anchored in post-quantum security standards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="padding: 120px 20px; text-align: center;">
+        <h2 class="hidden-scroll delay-1"
+            style="font-size: 36px; font-weight: 800; color: #0f172a; margin-bottom: 30px;">Global Data Nodes</h2>
+        <p class="hidden-scroll delay-2"
+            style="max-width: 600px; margin: 0 auto; color: #475569; font-size: 18px; line-height: 1.8;">Our encrypted
+            bunkers process thousands of transactions per second. We maintain heavily defended cold-storage hardware
+            clusters in prime strategic regions.</p>
+
+        <div class="hidden-scroll delay-3"
+            style="display: flex; justify-content: center; gap: 40px; margin-top: 50px; font-weight: 700; color: #1e293b; font-size: 20px;">
+            <div
+                style="background: white; padding: 20px 40px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                📍 New York</div>
+            <div
+                style="background: white; padding: 20px 40px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                📍 London</div>
+            <div
+                style="background: white; padding: 20px 40px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                📍 Tokyo</div>
+            <div
+                style="background: white; padding: 20px 40px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                📍 Geneva</div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div>
+                <div class="logo" style="color:white; margin-bottom: 15px; display:flex; align-items:center;">
+                    <img src="/images/logo.png" class="logo-img" alt="Logo">
+                    SECURE<span>BANK</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 15px; line-height: 1.7; max-width: 300px;">Institutional grade
+                    banking protected by continuous active threat monitoring and patented zero-trust verification
+                    pipelines.</p>
+            </div>
+            <div>
+                <h4>Products</h4>
+                <div class="footer-links">
+                    <a href="/services">Checking & Savings</a>
+                    <a href="/business">Enterprise Treasury</a>
+                    <a href="/security">Active Defense API</a>
+                    <a href="/services">Digital Vaults</a>
+                </div>
+            </div>
+            <div>
+                <h4>Company</h4>
+                <div class="footer-links">
+                    <a href="/about">About Us</a>
+                    <a href="/contact">Location Branches</a>
+                    <a href="/login">Secure Login</a>
+                    <a href="/open-account">Create Account</a>
+                </div>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Compliance Center</a>
+                    <a href="#">Security Alerts</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom" style="margin-top:60px; padding-top:30px; border-top:1px solid #1e293b;">
+            <span>© 2026 Secure Bank Corporation. All rights reserved. Globally distributed secure nodes.</span>
+            <span>FDIC Insured | Equal Housing Lender</span>
+        </div>
+    </footer>
+
+    <script src="/js/animations.js"></script>
+
+</body>
+
+</html>

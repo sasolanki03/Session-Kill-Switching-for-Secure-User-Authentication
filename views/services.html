@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | Core Services</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .page-hero {
+            background-image: linear-gradient(to right, rgba(2, 6, 23, 0.95), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=2670&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 160px 20px 100px 20px;
+            text-align: center;
+            border-bottom: 1px solid #1e293b;
+        }
+        .page-hero h1 { font-size: 64px; font-weight: 900; margin-bottom: 20px; letter-spacing: -2px; }
+        .page-hero p { font-size: 22px; color: #cbd5e1; max-width: 800px; margin: 0 auto; line-height: 1.6;}
+    </style>
+</head>
+<body>
+
+<nav class="navbar relative z-50">
+    <a href="/" class="logo" style="display:flex; align-items:center;">
+        <img src="/images/logo.png" class="logo-img" alt="Secure Bank Logo">
+        SECURE<span>BANK</span>
+    </a>
+    <div class="nav-links">
+        <a href="/about">About</a>
+        <a href="/services" style="color: #2563eb;">Services</a>
+        <a href="/business">Enterprise</a>
+        <a href="/security">Security</a>
+        <a href="/login" class="btn-outline">Sign In</a>
+        <a href="/open-account" class="btn-primary" style="box-shadow: 0 4px 14px 0 rgba(37,99,235,0.39);">Open Account</a>
+    </div>
+</nav>
+
+<div class="page-hero">
+    <div class="hidden-scroll">
+        <h1>Our Core Financial Services</h1>
+        <p>Discover our suite of fully protected checking, savings, corporate, and digital asset solutions.</p>
+    </div>
+</div>
+
+<div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
+    <div class="card hidden-scroll delay-1" style="padding:40px; border-top: 4px solid #38bdf8;">
+        <h3 style="font-size:24px; margin-bottom:15px;">Personal Checking</h3>
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
+            A modern, no-fee checking account protected by our signature Zero-Trust login gateway. Instantly freeze lost cards and monitor all active sessions directly from your dashboard.
+        </p>
+        <ul style="color:#475569; margin-bottom: 30px; padding-left: 20px; line-height:1.8;">
+            <li>Zero overdraft fees.</li>
+            <li>Instant alert telemetry.</li>
+            <li>Direct deposit ready.</li>
+        </ul>
+        <a href="/open-account" class="btn-outline" style="width: 100%; text-align: center;">Open Checking</a>
+    </div>
+
+    <div class="card hidden-scroll delay-2" style="padding:40px; border-top: 4px solid #10b981;">
+        <h3 style="font-size:24px; margin-bottom:15px;">High-Yield Savings</h3>
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
+            Grow your wealth safely with our 5.0% APY return. Transfers out of this account require strict One-Time Password (OTP) verification and identity checks.
+        </p>
+        <ul style="color:#475569; margin-bottom: 30px; padding-left: 20px; line-height:1.8;">
+            <li>Daily compounding interest.</li>
+            <li>Insured up to $5M via sweep network.</li>
+            <li>Locked withdrawal periods available.</li>
+        </ul>
+        <a href="/open-account" class="btn-outline" style="width: 100%; text-align: center;">Open Savings</a>
+    </div>
+
+    <div class="card hidden-scroll delay-1" style="padding:40px; border-top: 4px solid #8b5cf6;">
+        <h3 style="font-size:24px; margin-bottom:15px;">Corporate Treasury</h3>
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
+            Enterprise-grade liquidity management. Features multi-user role access, batch payments, and real-time dashboard telemetry connected via secure APIs.
+        </p>
+        <a href="/contact" class="btn-primary" style="width: 100%; text-align: center;">Contact Corporate Sales</a>
+    </div>
+
+    <div class="card hidden-scroll delay-2" style="padding:40px; border-top: 4px solid #f59e0b; background:#fffbeb;">
+        <h3 style="font-size:24px; margin-bottom:15px;">Digital Assets & Vaults</h3>
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 30px; line-height: 1.6;">
+            Safeguard your cryptographic keys and digital assets within our cold-storage bunkers, completely detached from public sweeping routines.
+        </p>
+        <a href="/contact" class="btn-outline" style="width: 100%; text-align: center; border-color:#d97706; color:#b45309;">Inquire About Vaults</a>
+    </div>
+</div>
+
+<footer class="site-footer" style="margin-top: 60px;">
+    <div class="footer-grid">
+        <div>
+            <div class="logo" style="color:white; margin-bottom: 15px; display:flex; align-items:center;">
+                <img src="/images/logo.png" class="logo-img" alt="Logo">
+                SECURE<span>BANK</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Institutional grade banking protected by continuous active threat monitoring and zero-trust verification.</p>
+        </div>
+        <div>
+            <h4>Products</h4>
+            <div class="footer-links">
+                <a href="/services">Checking & Savings</a>
+                <a href="/business">Enterprise Treasury</a>
+                <a href="/security">Active Defense API</a>
+            </div>
+        </div>
+        <div>
+            <h4>Company</h4>
+            <div class="footer-links">
+                <a href="/about">About Us</a>
+                <a href="/contact">Location Branches</a>
+                <a href="/login">Secure Login</a>
+            </div>
+        </div>
+        <div>
+            <h4>Legal</h4>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Secure Bank Corporation.</span>
+        <span>FDIC Insured</span>
+    </div>
+</footer>
+
+<script src="/js/animations.js"></script>
+</body>
+</html>

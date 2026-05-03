@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | My Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .grid-layout { display: grid; grid-template-columns: 240px 1fr; gap: 30px; }
+        .side-nav a { display: block; padding: 12px 16px; color: #475569; text-decoration: none; font-weight: 600; border-radius: 8px; margin-bottom: 5px; transition: all 0.2s; }
+        .side-nav a.active { background: #eff6ff; color: #2563eb; }
+        .side-nav a:hover:not(.active) { background: #f8fafc; transform: translateX(3px); }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding: 14px 0; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-value { color: #0f172a; font-weight: 700; font-size: 16px; }
+        .acct-number { font-family: monospace; font-size: 20px; background: linear-gradient(135deg,#1e3a5f,#2563eb); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:800; letter-spacing:2px; }
+        .badge-green { background:#dcfce7; color:#166534; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+        .badge-red   { background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+        .strength-bar-wrap { margin-top: 8px; height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .strength-bar { height: 100%; border-radius: 6px; width: 0%; transition: width 0.4s, background 0.4s; }
+        .strength-weak   { background: #ef4444; }
+        .strength-fair   { background: #f59e0b; }
+        .strength-good   { background: #3b82f6; }
+        .strength-strong { background: #16a34a; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #0f172a; color: white; padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar relative z-50">
+    <a href="/dashboard" class="logo" style="display:flex; align-items:center;">
+        <img src="/images/logo.png" class="logo-img" alt="Secure Bank Logo">
+        SECURE<span>BANK</span>
+    </a>
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/profile" style="color: #2563eb;">Profile</a>
+        <a href="/demo-control" style="color: #f59e0b; font-weight: 700;">Control Panel</a>
+        <a href="/logout" class="btn-danger">Sign Out</a>
+    </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<div class="container grid-layout" style="margin-top:40px; padding-bottom:60px;">
+    <div class="side-nav hidden-scroll delay-1">
+        <a href="/dashboard">Account Overview</a>
+        <a href="/profile" class="active">Manage Profile</a>
+        <a href="/demo-control">Security Control Panel</a>
+        <a href="/contact">Support</a>
+    </div>
+
+    <div>
+        <h2 class="hidden-scroll" style="margin-bottom:24px; color:#0f172a; font-size:28px; font-weight:900;">My Profile</h2>
+
+        <!-- Account Identity Card -->
+        <div class="card hidden-scroll delay-1" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:4px;">Account Identity</h3>
+            <p style="color:#64748b; font-size:13px; margin-bottom:20px;">Your verified banking credentials and personal details.</p>
+
+            <div class="detail-row">
+                <span class="detail-label">Full Name</span>
+                <span class="detail-value" id="p_fullname">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Username</span>
+                <span class="detail-value" id="p_username">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Account Number</span>
+                <span class="acct-number" id="p_acctnum">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Account Type</span>
+                <span class="detail-value" id="p_accttype">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Member Since</span>
+                <span class="detail-value" id="p_since">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Registered Email</span>
+                <span class="detail-value" id="p_email">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Phone Number</span>
+                <span class="detail-value" id="p_phone">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Account Status</span>
+                <span id="p_status">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Security Score</span>
+                <span class="detail-value" style="color:#2563eb;" id="p_securityScore">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Authentication Settings -->
+        <div class="card hidden-scroll delay-2" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:4px;">Authentication Preferences</h3>
+            <p style="color:#64748b; font-size:13px; margin-bottom:20px;">Active security layers protecting your account.</p>
+            <div class="detail-row">
+                <div><h4 style="margin:0 0 4px; color:#0f172a;">Email OTP (2FA)</h4><p style="color:#64748b; font-size:13px; margin:0;">6-digit code sent to your email on every login</p></div>
+                <span class="badge-green" id="pref_otp">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <div><h4 style="margin:0 0 4px; color:#0f172a;">Strict IP Binding</h4><p style="color:#64748b; font-size:13px; margin:0;">Kill-Switch triggers if your IP address changes</p></div>
+                <span class="badge-green" id="pref_ipBinding">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <div><h4 style="margin:0 0 4px; color:#0f172a;">Brute-Force Protection</h4><p style="color:#64748b; font-size:13px; margin:0;">Account locks after 3 failed login attempts</p></div>
+                <span class="badge-green" id="pref_rateLimit">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <div><h4 style="margin:0 0 4px; color:#0f172a;">Session Auto-Expiry</h4><p style="color:#64748b; font-size:13px; margin:0;">Your session expires automatically after 10 minutes of inactivity</p></div>
+                <span class="badge-green" id="pref_session">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Update Contact Details -->
+        <div class="card hidden-scroll delay-3" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:4px;">Update Contact Details</h3>
+            <p style="color:#64748b; font-size:13px; margin-bottom:20px;">Changes are saved securely to your profile.</p>
+            <div class="alert-success" id="contactSuccess"></div>
+            <div class="alert-error" id="contactError"></div>
+            <form id="updateContactForm">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="input-group"><label>Full Name</label><input type="text" id="newFullName" placeholder="Your full name"></div>
+                    <div class="input-group"><label>Phone Number</label><input type="tel" id="newPhone" placeholder="+91-XXXXXXXXXX"></div>
+                </div>
+                <div class="input-group"><label>Email Address</label><input type="email" id="newEmail" placeholder="new@email.com"></div>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer" style="margin-top: 0;">
+    <div class="footer-grid">
+        <div>
+            <div class="logo" style="color:white; margin-bottom:15px; display:flex; align-items:center;">
+                <img src="/images/logo.png" class="logo-img" alt="Logo">
+                SECURE<span>BANK</span>
+            </div>
+            <p style="color:#94a3b8; font-size:14px; line-height:1.6;">Zero-trust institutional banking infrastructure.</p>
+        </div>
+        <div><h4>Products</h4><div class="footer-links"><a href="/services">Checking</a><a href="/services">Savings</a></div></div>
+        <div><h4>Company</h4><div class="footer-links"><a href="/about">About Us</a><a href="/contact">Contact</a></div></div>
+        <div><h4>Legal</h4><div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Security Alerts</a></div></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Secure Bank Corporation.</span><span>FDIC Insured</span></div>
+</footer>
+
+<script src="/js/animations.js"></script>
+<script>
+    let csrfToken = "";
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast show';
+        setTimeout(() => t.className = 'toast', 3500);
+    }
+
+    async function init() {
+        try {
+            const resCsrf = await fetch("/api/csrf-token");
+            if (!resCsrf.ok) throw new Error("Security Handshake Failed");
+            const dataCsrf = await resCsrf.json();
+            csrfToken = dataCsrf.csrfToken;
+
+            const res = await fetch("/api/profile");
+            if (res.status === 401) {
+                window.location.href = "/login?expired=true";
+                return;
+            }
+            if (!res.ok) throw new Error("Profile Fetch Failed");
+            const p = await res.json();
+            
+            if (p.username) {
+                document.getElementById("p_fullname").innerText = p.fullName || p.username;
+                document.getElementById("p_username").innerText = p.username;
+                document.getElementById("p_acctnum").innerText = p.accountNumber || 'N/A';
+                document.getElementById("p_accttype").innerText = p.accountType || 'Personal';
+                document.getElementById("p_since").innerText = p.createdAt || 'N/A';
+                document.getElementById("p_email").innerText = p.email;
+                document.getElementById("p_phone").innerText = p.phone || 'Not provided';
+                document.getElementById("p_status").innerHTML = p.locked
+                    ? '<span class="badge-red">LOCKED</span>'
+                    : (p.frozen ? '<span class="badge-red">FROZEN</span>' : '<span class="badge-green">ACTIVE & SECURE</span>');
+
+                // Pre-fill update form
+                document.getElementById("newFullName").value = p.fullName || '';
+                document.getElementById("newPhone").value = p.phone || '';
+                document.getElementById("newEmail").value = p.email || '';
+            }
+
+            // Fetch dynamic security settings
+            try {
+                const secRes = await fetch("/api/security-mode");
+                if (secRes.ok) {
+                    const sec = await secRes.json();
+                    const updateBadge = (id, isEnabled) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.className = isEnabled ? 'badge-green' : 'badge-red';
+                            el.innerText = isEnabled ? 'ENABLED' : 'DISABLED';
+                        }
+                    };
+                    updateBadge('pref_otp', sec.otpEnabled);
+                    updateBadge('pref_ipBinding', sec.ipBinding);
+                    updateBadge('pref_rateLimit', sec.rateLimit);
+                    updateBadge('pref_session', true); // Session auto-expiry is always enabled
+
+                    // Calculate Security Score dynamically
+                    const features = ['httpOnly', 'csrfEnabled', 'ipBinding', 'otpEnabled', 'rateLimit', 'inputSanitize', 'concurrentLogin', 'sameSiteStrict'];
+                    let enabledCount = 0;
+                    features.forEach(f => {
+                        if (sec[f]) enabledCount++;
+                    });
+                    
+                    let score = Math.round((enabledCount / features.length) * 100);
+                    let label = "Poor";
+                    let color = "#ef4444"; // Red
+                    
+                    if (score >= 90) { label = "Excellent"; color = "#16a34a"; } // Green
+                    else if (score >= 70) { label = "Good"; color = "#2563eb"; } // Blue
+                    else if (score >= 50) { label = "Fair"; color = "#f59e0b"; } // Orange
+
+                    const scoreEl = document.getElementById("p_securityScore");
+                    if (scoreEl) {
+                        scoreEl.innerText = `${score} / 100 — ${label}`;
+                        scoreEl.style.color = color;
+                    }
+                }
+            } catch(e) {
+                console.error("Failed to load security settings", e);
+            }
+        } catch (err) {
+            console.error("Profile Init Error:", err);
+            const placeholders = ["p_fullname", "p_username", "p_acctnum", "p_accttype", "p_since", "p_email", "p_phone", "p_status"];
+            placeholders.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = "Error";
+            });
+            showToast("⚠️ Could not load profile. Check security protocols.", "error");
+        }
+    }
+
+    document.getElementById("updateContactForm").addEventListener("submit", async(e) => {
+        e.preventDefault();
+        const successBox = document.getElementById("contactSuccess");
+        const errorBox   = document.getElementById("contactError");
+        successBox.style.display = 'none';
+        errorBox.style.display = 'none';
+
+        try {
+            const res = await fetch("/api/profile/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                body: JSON.stringify({
+                    newEmail:    document.getElementById("newEmail").value,
+                    newPhone:    document.getElementById("newPhone").value,
+                    newFullName: document.getElementById("newFullName").value
+                })
+            });
+            if (res.status === 401) {
+                window.location.href = "/login?expired=true";
+                return;
+            }
+            const data = await res.json();
+            if (res.ok) {
+                successBox.innerText = "✅ Profile updated successfully.";
+                successBox.style.display = 'block';
+                showToast('Profile saved ✓');
+                init(); // Refresh displayed values
+            } else {
+                errorBox.innerText = data.error;
+                errorBox.style.display = 'block';
+            }
+        } catch(err) {
+            errorBox.innerText = "Network Error";
+            errorBox.style.display = 'block';
+        }
+    });
+
+    init();
+</script>
+</body>
+</html>

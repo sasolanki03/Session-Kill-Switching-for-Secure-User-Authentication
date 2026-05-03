@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | Open Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .auth-container { max-width: 540px; margin: 50px auto; }
+        .form-header { text-align: center; margin-bottom: 30px; }
+        .form-header h2 { font-size: 30px; color: #0f172a; margin-bottom: 8px; font-weight: 900; }
+        .strength-bar-wrap { margin-top: 8px; height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .strength-bar { height: 100%; border-radius: 6px; width: 0%; transition: width 0.4s, background 0.4s; }
+        .strength-label { font-size: 12px; margin-top: 5px; font-weight: 600; }
+        .strength-weak   { background: #ef4444; }
+        .strength-fair   { background: #f59e0b; }
+        .strength-good   { background: #3b82f6; }
+        .strength-strong { background: #16a34a; }
+        .input-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar relative z-50">
+    <a href="/" class="logo" style="display:flex; align-items:center;">
+        <img src="/images/logo.png" class="logo-img" alt="Secure Bank Logo">
+        SECURE<span>BANK</span>
+    </a>
+    <div class="nav-links">
+        <a href="/login">Already have an account? Sign In</a>
+    </div>
+</nav>
+
+<div class="container auth-container">
+    <div class="card">
+        <div class="form-header">
+            <h2>Open an Account</h2>
+            <p style="color:#64748b; font-size:14px;">Join the secure banking revolution today.</p>
+        </div>
+
+        <div class="alert-error" id="errorBox"></div>
+        <div class="alert-success" id="successBox"></div>
+
+        <form id="openAccountForm">
+            <div class="input-group">
+                <label>Full Name *</label>
+                <input type="text" id="fullName" placeholder="e.g. Shivani Solanki" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="input-group">
+                    <label>Username *</label>
+                    <input type="text" id="username" placeholder="e.g. shivani123" required maxlength="20">
+                    <p class="input-hint">3-20 chars, letters/numbers/_</p>
+                </div>
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+91-9999999999">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Email Address *</label>
+                <input type="email" id="email" placeholder="john.doe@example.com" required>
+            </div>
+            <div class="input-group">
+                <label>Create Password *</label>
+                <input type="password" id="password" required placeholder="Min 8 chars, uppercase, number, symbol">
+                <div class="strength-bar-wrap"><div class="strength-bar" id="strengthBar"></div></div>
+                <p class="strength-label" id="strengthLabel" style="color:#94a3b8;">Enter a password</p>
+            </div>
+            <button type="submit" class="btn-primary" id="submitBtn" style="width: 100%; margin-top: 10px; font-size: 16px; padding: 15px;">
+                Create Secure Account
+            </button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #94a3b8;">
+            By continuing, you agree to our Terms of Service and Privacy Policy.
+        </p>
+    </div>
+</div>
+
+<script>
+    let csrfToken = "";
+    fetch("/api/csrf-token")
+        .then(res => res.json())
+        .then(data => { csrfToken = data.csrfToken; })
+        .catch(err => console.error("CSRF Fetch failed", err));
+
+    // Live password strength meter
+    document.getElementById("password").addEventListener("input", function() {
+        const pwd = this.value;
+        const bar = document.getElementById("strengthBar");
+        const label = document.getElementById("strengthLabel");
+        let score = 0;
+        if (pwd.length >= 8) score++;
+        if (/[A-Z]/.test(pwd)) score++;
+        if (/[0-9]/.test(pwd)) score++;
+        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) score++;
+
+        const levels = [
+            { pct: '0%',   cls: '',                text: 'Enter a password',    color: '#94a3b8' },
+            { pct: '25%',  cls: 'strength-weak',   text: 'Weak — too simple',   color: '#ef4444' },
+            { pct: '50%',  cls: 'strength-fair',   text: 'Fair — needs work',   color: '#f59e0b' },
+            { pct: '75%',  cls: 'strength-good',   text: 'Good — almost there', color: '#3b82f6' },
+            { pct: '100%', cls: 'strength-strong', text: 'Strong ✓',            color: '#16a34a' }
+        ];
+        const lvl = pwd.length === 0 ? levels[0] : levels[score];
+        bar.style.width = lvl.pct;
+        bar.className = 'strength-bar ' + lvl.cls;
+        label.textContent = lvl.text;
+        label.style.color = lvl.color;
+    });
+
+    document.getElementById("openAccountForm").addEventListener("submit", async(e) => {
+        e.preventDefault();
+        const username = document.getElementById("username").value.trim();
+        const email    = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const fullName = document.getElementById("fullName").value.trim();
+        const phone    = document.getElementById("phone").value.trim();
+
+        const errorBox   = document.getElementById("errorBox");
+        const successBox = document.getElementById("successBox");
+        errorBox.style.display = 'none';
+        successBox.style.display = 'none';
+
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Creating Account...";
+
+        try {
+            const res = await fetch("/api/open-account", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                body: JSON.stringify({ username, email, password, fullName, phone })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                errorBox.innerText = data.error;
+                errorBox.style.display = 'block';
+            } else {
+                successBox.innerText = "✅ Account created! Your 11-digit account number was generated. Redirecting to login...";
+                successBox.style.display = 'block';
+                setTimeout(() => window.location.href = data.redirect, 2500);
+            }
+        } catch(err) {
+            errorBox.innerText = "Network error. Please try again.";
+            errorBox.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Create Secure Account";
+        }
+    });
+</script>
+
+<footer class="site-footer" style="margin-top: 60px;">
+    <div class="footer-grid">
+        <div>
+            <div class="logo" style="color:white; margin-bottom: 15px; display:flex; align-items:center;">
+                <img src="/images/logo.png" class="logo-img" alt="Logo">
+                SECURE<span>BANK</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Institutional grade banking protected by continuous active threat monitoring and zero-trust verification.</p>
+        </div>
+        <div><h4>Products</h4><div class="footer-links"><a href="/services">Checking</a><a href="/services">Savings</a></div></div>
+        <div><h4>Company</h4><div class="footer-links"><a href="/about">About Us</a><a href="/contact">Contact</a></div></div>
+        <div><h4>Legal</h4><div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Security Alerts</a></div></div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 Secure Bank Corporation.</span>
+        <span>FDIC Insured</span>
+    </div>
+</footer>
+<script src="/js/animations.js"></script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .grid-layout { display: grid; grid-template-columns: 240px 1fr; gap: 30px; }
+        .side-nav a { display: block; padding: 12px 16px; color: #475569; text-decoration: none; font-weight: 600; border-radius: 8px; margin-bottom: 5px; transition: all 0.2s; }
+        .side-nav a.active { background: #eff6ff; color: #2563eb; }
+        .side-nav a:hover:not(.active) { background: #f8fafc; transform: translateX(3px); }
+        .balance-header { font-size: 42px; color: #0f172a; font-weight: 800; margin: 10px 0; letter-spacing: -1px; }
+        .tx-deposit { color: #16a34a; font-weight: 700; }
+        .tx-withdrawal { color: #dc2626; font-weight: 700; }
+        .security-alert { background: #fef2f2; border: 1px solid #fca5a5; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .acct-badge { background: linear-gradient(135deg, #1e3a5f, #2563eb); color: white; padding: 12px 20px; border-radius: 12px; display: inline-block; font-family: monospace; font-size: 18px; font-weight: 700; letter-spacing: 2px; margin-bottom: 5px; }
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+        .modal-box h3 { font-size: 22px; margin-bottom: 20px; color: #0f172a; }
+        .modal-box .input-group { margin-bottom: 16px; }
+        .modal-box .input-group label { display: block; font-weight: 600; color: #475569; font-size: 13px; margin-bottom: 6px; }
+        .modal-box .input-group input { width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #94a3b8; background: none; border: none; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #0f172a; color: white; padding: 16px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid #16a34a; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .frozen-banner { background: #fef2f2; border: 2px solid #fca5a5; padding: 16px 20px; border-radius: 10px; margin-bottom: 20px; display: none; font-weight: 600; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar relative z-50">
+    <a href="/dashboard" class="logo" style="display:flex; align-items:center;">
+        <img src="/images/logo.png" class="logo-img" alt="Secure Bank Logo">
+        SECURE<span>BANK</span>
+    </a>
+    <div class="nav-links">
+        <a href="/dashboard" style="color: #2563eb;">Dashboard</a>
+        <a href="/profile">Profile</a>
+        <a href="/demo-control" style="color: #f59e0b; font-weight: 700;">Control Panel</a>
+        <a href="/logout" class="btn-danger">Sign Out</a>
+    </div>
+</nav>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Transfer Modal -->
+<div class="modal-overlay" id="transferModal">
+    <div class="modal-box" style="position:relative;">
+        <button class="modal-close" onclick="closeModal('transferModal')">✕</button>
+        <h3>💸 Transfer Funds</h3>
+        <div class="alert-error" id="transferError" style="margin-bottom:15px;"></div>
+        <div class="input-group"><label>Recipient Account Number</label><input type="text" id="recipientAcct" placeholder="e.g. 41234567890"></div>
+        <div class="input-group"><label>Amount ($)</label><input type="number" id="transferAmount" placeholder="0.00" min="0.01" step="0.01"></div>
+        <div class="input-group"><label>Description (Optional)</label><input type="text" id="transferDesc" placeholder="e.g. Rent, Invoice #123"></div>
+        <button class="btn-primary" style="width:100%;" onclick="doTransfer()">Confirm Transfer</button>
+    </div>
+</div>
+
+<!-- Deposit Modal -->
+<div class="modal-overlay" id="depositModal">
+    <div class="modal-box" style="position:relative;">
+        <button class="modal-close" onclick="closeModal('depositModal')">✕</button>
+        <h3>🏦 Self Deposit</h3>
+        <div class="alert-error" id="depositError" style="margin-bottom:15px;"></div>
+        <div class="input-group"><label>Deposit Amount ($)</label><input type="number" id="depositAmount" placeholder="0.00" min="0.01" step="0.01"></div>
+        <button class="btn-primary" style="width:100%;" onclick="doDeposit()">Confirm Deposit</button>
+    </div>
+</div>
+
+<div class="container grid-layout" style="margin-top:40px; padding-bottom:40px;">
+    <div class="side-nav hidden-scroll delay-1">
+        <a href="/dashboard" class="active">Account Overview</a>
+        <a href="/profile">Manage Profile</a>
+        <a href="/demo-control">Security Control Panel</a>
+        <a href="/contact">Support</a>
+    </div>
+
+    <div>
+        <div class="security-alert" id="securityAlert">
+            <h4 style="color:#991b1b; margin-bottom:5px;">⚠️ Security Threat Blocked</h4>
+            <p style="font-size:13px; color:#7f1d1d;" id="alertText"></p>
+        </div>
+        <div class="frozen-banner" id="frozenBanner">🔒 Your account is currently FROZEN. Deposits and transfers are disabled.</div>
+
+        <!-- Top row -->
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div class="card hidden-scroll delay-2">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <h3 style="color:#64748b; font-size:13px; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Total Available Balance</h3>
+                        <div class="balance-header" id="accountBalance">Loading...</div>
+                        <p style="color: #64748b; font-size: 13px;">Available for withdrawal</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">Account No.</p>
+                        <div class="acct-badge" id="acctNumDisplay">----</div>
+                        <p style="font-size:12px; color:#64748b; margin-top:4px;" id="acctTypeDisplay">Personal Savings</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap:wrap;">
+                    <button class="btn-primary" id="transferBtn" onclick="openModal('transferModal')">💸 Transfer Funds</button>
+                    <button class="btn-outline" id="depositBtn" onclick="openModal('depositModal')">🏦 Deposit</button>
+                </div>
+            </div>
+
+            <div class="card hidden-scroll delay-3" style="display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                    <h3 style="margin-bottom:12px;">Active Sessions</h3>
+                    <div id="sessionList" style="margin-top:8px; max-height:120px; overflow-y:auto;">
+                        <p style="color:#64748b; font-size:13px;">Loading sessions...</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+                    <h3 style="margin-bottom:12px;">Quick Actions</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button id="freezeBtn" class="btn-outline" style="font-size:13px; padding:10px; color:#dc2626; border-color:#fca5a5;" onclick="toggleFreeze()">🔒 Freeze Account</button>
+                        <button class="btn-outline" style="font-size:13px; padding:10px;" onclick="orderCard()">💳 Order New Card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="card hidden-scroll delay-3">
+            <h3 style="margin-bottom:16px;">Recent Transactions</h3>
+            <table class="dataTable">
+                <thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
+                <tbody id="transactionList"><tr><td colspan="3" style="text-align:center;">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer" style="margin-top: 0;">
+    <div class="footer-grid">
+        <div>
+            <div class="logo" style="color:white; margin-bottom:15px; display:flex; align-items:center;">
+                <img src="/images/logo.png" class="logo-img" alt="Logo">
+                SECURE<span>BANK</span>
+            </div>
+            <p style="color:#94a3b8; font-size:14px; line-height:1.6;">Institutional grade banking protected by continuous active threat monitoring.</p>
+        </div>
+        <div><h4>Products</h4><div class="footer-links"><a href="/services">Checking</a><a href="/services">Savings</a></div></div>
+        <div><h4>Company</h4><div class="footer-links"><a href="/about">About Us</a><a href="/contact">Contact</a></div></div>
+        <div><h4>Legal</h4><div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Security Alerts</a></div></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Secure Bank Corporation.</span><span>FDIC Insured</span></div>
+</footer>
+
+<script src="/js/animations.js"></script>
+<script>
+    let csrfToken = "";
+    let isFrozen = false;
+
+    async function init() {
+        try {
+            const res = await fetch("/api/csrf-token");
+            if (!res.ok) throw new Error("Security Handshake Failed");
+            const data = await res.json();
+            csrfToken = data.csrfToken;
+            pollData();
+            setInterval(pollData, 15000); // Optimized polling interval to reduce server load
+        } catch (err) {
+            console.error("Dashboard Init Error:", err);
+            document.getElementById("accountBalance").innerText = "Error";
+            document.getElementById("acctNumDisplay").innerText = "Error";
+            showToast("⚠️ Security Link Failed. Please refresh or check connection.", "error");
+        }
+    }
+
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast ' + type + ' show';
+        setTimeout(() => t.className = 'toast', 3500);
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.getElementById(id.replace('Modal','Error')).style.display = 'none'; }
+
+    let lastLogCount = 0;
+
+    async function pollData() {
+        try {
+            const bankRes = await fetch("/api/bank-data");
+            if (bankRes.status === 401) {
+                window.location.href = "/login?expired=true";
+                return;
+            }
+            const bankData = await bankRes.json();
+
+            if (!bankData.error) {
+                document.getElementById("accountBalance").innerText = "$" + bankData.balance.toFixed(2);
+                document.getElementById("acctNumDisplay").innerText = bankData.accountNumber || 'N/A';
+                document.getElementById("acctTypeDisplay").innerText = bankData.accountType || 'Personal';
+
+                isFrozen = bankData.frozen;
+                document.getElementById("frozenBanner").style.display = isFrozen ? "block" : "none";
+                document.getElementById("freezeBtn").innerText = isFrozen ? "🔓 Unfreeze Account" : "🔒 Freeze Account";
+                document.getElementById("freezeBtn").style.color = isFrozen ? "#16a34a" : "#dc2626";
+                document.getElementById("freezeBtn").style.borderColor = isFrozen ? "#86efac" : "#fca5a5";
+                document.getElementById("transferBtn").disabled = isFrozen;
+                document.getElementById("depositBtn").disabled = isFrozen;
+
+                let txHtml = "";
+                (bankData.transactions || []).forEach(tx => {
+                    const isDeposit = tx.type === 'DEPOSIT';
+                    txHtml += `<tr>
+                        <td>${new Date(tx.date).toLocaleDateString()}</td>
+                        <td style="font-weight:500;">${tx.desc || (isDeposit ? 'Incoming Transfer' : 'Electronic Withdrawal')}</td>
+                        <td class="${isDeposit ? 'tx-deposit' : 'tx-withdrawal'}">${isDeposit ? '+' : '-'}$${tx.amount.toFixed(2)}</td>
+                    </tr>`;
+                });
+                document.getElementById("transactionList").innerHTML = txHtml || `<tr><td colspan="3" style="text-align:center; color:#64748b;">No transactions yet.</td></tr>`;
+            }
+
+            const sessRes = await fetch("/api/sessions");
+            const sessions = await sessRes.json();
+            let sessHtml = "";
+            sessions.forEach(s => {
+                sessHtml += `<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:8px; margin-bottom:8px;">
+                    <div><div style="font-weight:600; color:#0f172a; font-size:13px;">${s.username}</div>
+                    <div style="font-size:11px; color:#64748b;">Status: ${s.sessionMap}</div></div>
+                    <button class="btn-danger" style="font-size:11px; padding:4px 8px;" onclick="forceLogout('${s.username}')">REVOKE</button>
+                </div>`;
+            });
+            document.getElementById("sessionList").innerHTML = sessHtml || '<p style="color:#64748b; font-size:13px;">No active sessions.</p>';
+
+            const logRes = await fetch("/api/logs");
+            const logs = await logRes.json();
+            if (logs.length > lastLogCount && lastLogCount !== 0) {
+                const newest = logs[0];
+                if (newest.action.includes("HIJACK_BLOCKED")) {
+                    const alertDiv = document.getElementById("securityAlert");
+                    document.getElementById("alertText").innerText = newest.details;
+                    alertDiv.style.display = "block";
+                    setTimeout(() => alertDiv.style.display = "none", 8000);
+                }
+            }
+            lastLogCount = logs.length;
+        } catch(e) { console.error("Dashboard Sync Error:", e); }
+    }
+
+    async function doTransfer() {
+        const errBox = document.getElementById("transferError");
+        errBox.style.display = 'none';
+        const amount = document.getElementById("transferAmount").value;
+        const description = document.getElementById("transferDesc").value;
+        try {
+            const res = await fetch("/api/transfer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                body: JSON.stringify({ amount, description })
+            });
+            const data = await res.json();
+            if (!res.ok) { errBox.innerText = data.error; errBox.style.display = 'block'; return; }
+            closeModal('transferModal');
+            showToast(`✅ Transfer of $${parseFloat(amount).toFixed(2)} successful!`, 'success');
+            pollData();
+        } catch(e) { errBox.innerText = 'Network error.'; errBox.style.display = 'block'; }
+    }
+
+    async function doDeposit() {
+        const errBox = document.getElementById("depositError");
+        errBox.style.display = 'none';
+        const amount = document.getElementById("depositAmount").value;
+        try {
+            const res = await fetch("/api/deposit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                body: JSON.stringify({ amount })
+            });
+            const data = await res.json();
+            if (!res.ok) { errBox.innerText = data.error; errBox.style.display = 'block'; return; }
+            closeModal('depositModal');
+            showToast(`✅ Deposit of $${parseFloat(amount).toFixed(2)} successful!`, 'success');
+            pollData();
+        } catch(e) { errBox.innerText = 'Network error.'; errBox.style.display = 'block'; }
+    }
+
+    async function toggleFreeze() {
+        try {
+            const res = await fetch("/api/freeze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                body: JSON.stringify({})
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast(data.frozen ? '🔒 Account frozen successfully.' : '🔓 Account unfrozen.', 'success');
+                pollData();
+            }
+        } catch(e) { showToast('Network error.', 'error'); }
+    }
+
+    function orderCard() {
+        showToast('💳 Virtual card ordered! Delivery in 3 business days.', 'success');
+    }
+
+    async function forceLogout(username) {
+        if (!confirm(`Revoke trust for ${username}?`)) return;
+        try {
+            await fetch("/api/force-logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                body: JSON.stringify({ targetUser: username })
+            });
+            pollData();
+        } catch(e) { console.error("Force logout failed", e); }
+    }
+
+    init();
+</script>
+</body>
+</html>

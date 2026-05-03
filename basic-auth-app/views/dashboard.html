@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e9ecef;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background-color: #343a40;
+      padding: 15px 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      background-color: #dc3545;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .navbar a:hover {
+      background-color: #c82333;
+    }
+    .content {
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      margin-top: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    p {
+      color: #666;
+      line-height: 1.6;
+    }
+    .card {
+      background-color: #f8f9fa;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <h2>MyApp Dashboard</h2>
+    <!-- This link points to the /logout route in app.js -->
+    <a href="/logout">Logout</a>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="content">
+    <h1>Welcome successfully logged in User! 🎉</h1>
+    
+    <p>
+      Congratulations! You have successfully bypassed the login screen using Express Session authentication. 
+      Because you are logged in, the server allows you to view this protected page.
+    </p>
+
+    <div class="card">
+      <strong>How it works:</strong>
+      <p>When you logged in, the server created a session and stored your username inside it. Every time you try to access this page, the server checks if that session exists. If it does, you get to stay. If not, you get redirected back to the login page!</p>
+    </div>
+  </div>
+
+</body>
+</html>

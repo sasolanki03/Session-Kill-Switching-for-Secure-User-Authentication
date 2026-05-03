@@ -1,0 +1,13 @@
+{
+  "name": "basic-auth-app",
+  "version": "1.0.0",
+  "description": "Simple beginner-friendly Node.js Authentication App",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  }
+}

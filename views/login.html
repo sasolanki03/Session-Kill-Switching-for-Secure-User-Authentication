@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Bank | Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Hide scroll for purely split screen experience */
+        }
+        .split-layout {
+            display: flex;
+            height: 100vh;
+        }
+        .split-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            position: relative;
+            z-index: 10;
+        }
+        .split-right {
+            flex: 1.2;
+            background-image: 
+                linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(2, 6, 23, 0.8)),
+                url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=2671&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px;
+            color: white;
+            position: relative;
+        }
+        .split-right::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            background: white;
+        }
+        
+        .form-header {
+            margin-bottom: 35px;
+        }
+        .form-header h2 {
+            font-size: 32px;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        #step2 { display: none; }
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            background: #f0fdf4;
+            color: #166534;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(22, 101, 52, 0.1);
+        }
+        .secure-badge::before {
+            content: "🔒";
+            margin-right: 6px;
+        }
+        
+        .back-nav {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        .back-nav:hover { color: #2563eb; }
+    </style>
+</head>
+<body>
+
+<div class="split-layout">
+    <div class="split-left">
+        <a href="/" class="back-nav">← Return to Home</a>
+        
+        <div class="auth-container">
+            <div class="form-header">
+                <div class="secure-badge">End-to-End 256-Bit Encrypted</div>
+                <h2 id="form-title">Client Login</h2>
+                <div id="expiry-msg" style="display:none; background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; font-weight: 600;">⚠️ Security session expired. Please re-authenticate to continue.</div>
+                <p style="color:#64748b; font-size:15px; line-height: 1.5;" id="form-subtitle">Welcome back. Enter your secure credentials to bypass the active firewall.</p>
+            </div>
+            
+            <script>
+                if (window.location.search.includes('expired=true')) {
+                    document.getElementById('expiry-msg').style.display = 'block';
+                }
+            </script>
+
+            <div class="alert-error" id="errorBox"></div>
+
+            <form id="loginForm">
+                <div id="step1">
+                    <div class="input-group">
+                        <label>Assigned ID</label>
+                        <input type="text" id="username" placeholder="e.g. jdoe123" required style="padding: 14px;">
+                    </div>
+                    <div class="input-group">
+                        <label>Terminal Passcode</label>
+                        <input type="password" id="password" required style="padding: 14px;">
+                    </div>
+                </div>
+
+                <div id="step2">
+                    <div class="input-group">
+                        <label>Authenticator OTP</label>
+                        <p style="font-size:12px; color:#64748b; margin-top:-5px; margin-bottom:10px;">A heavily encrypted verification code has been generated. Check your registered email.</p>
+                        <input type="text" id="otp" placeholder="6-Digit OTP" maxlength="6" style="padding: 14px; font-size:18px; letter-spacing: 4px; text-align: center; font-weight:700;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn" style="width: 100%; margin-top: 15px; padding: 16px; font-size: 16px;">Initiate Handshake</button>
+            </form>
+            
+            <p style="text-align:center; margin-top: 35px; font-size:14px; color:#94a3b8;">
+                Don't have an operating ID? <a href="/open-account" style="color:#2563eb; font-weight:600; text-decoration:none;">Open an account</a>
+            </p>
+        </div>
+    </div>
+    
+    <div class="split-right">
+        <div style="position: relative; z-index: 20;">
+            <div class="logo" style="color:white; margin-bottom: 25px; display:inline-flex; align-items:center;">
+                <img src="/images/logo.png" class="logo-img" alt="Logo" style="height: 48px; border-radius: 8px;">
+                <span style="font-size:32px; font-weight:800; letter-spacing:1px;">SECURE<span style="color:#fff;">BANK</span></span>
+            </div>
+            
+            <h1 style="font-size: 54px; font-weight: 800; letter-spacing: -2px; margin-bottom: 25px; line-height: 1.1; max-width:600px;">
+                Uncompromising Security.<br>Unparalleled Wealth.
+            </h1>
+            
+            <p style="font-size: 20px; color: #cbd5e1; max-width: 550px; line-height: 1.6; margin-bottom: 40px; font-weight:300;">
+                You are entering a zero-trust restricted zone. Our active threat-monitoring arrays are analyzing your connection footprint.
+            </p>
+            
+            <div style="display:flex; gap:30px;">
+                <div>
+                    <h4 style="font-size:28px; margin:0 0 5px 0;">500K+</h4>
+                    <span style="color:#94a3b8; font-size:14px;">Blocked Attacks</span>
+                </div>
+                <div>
+                    <h4 style="font-size:28px; margin:0 0 5px 0;">100%</h4>
+                    <span style="color:#94a3b8; font-size:14px;">Uptime Guarantee</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let csrfToken = "";
+    fetch("/api/csrf-token")
+        .then(res => res.json())
+        .then(data => { csrfToken = data.csrfToken; })
+        .catch(err => console.error("CSRF Fetch failed", err));
+
+    let currentStep = 1;
+    const form = document.getElementById("loginForm");
+    const errorBox = document.getElementById("errorBox");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBox.style.display = 'none';
+
+        if(currentStep === 1) {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const res = await fetch("/login/step1", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                
+                if(!res.ok) {
+                    errorBox.innerText = data.error || "Handshake failed.";
+                    errorBox.style.display = 'block';
+                } else if(data.step === "OTP_REQUIRED") {
+                    if (document.getElementById("expiry-msg")) document.getElementById("expiry-msg").style.display = "none";
+                    document.getElementById("step1").style.display = "none";
+                    document.getElementById("step2").style.display = "block";
+                    document.getElementById("form-title").innerText = "2FA Verification";
+                    document.getElementById("form-subtitle").innerText = data.message;
+                    document.getElementById("submitBtn").innerText = "Verify Identity";
+                    currentStep = 2;
+                } else if(data.step === "OTP_BYPASSED") {
+                    window.location.href = data.redirect;
+                }
+            } catch(e) {}
+        } 
+        else if (currentStep === 2) {
+            const otp = document.getElementById("otp").value;
+            try {
+                const res = await fetch("/login/step2", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "CSRF-Token": csrfToken },
+                    body: JSON.stringify({ otp })
+                });
+                const data = await res.json();
+                
+                if(!res.ok) {
+                    errorBox.innerText = data.error || "Invalid OTP Sequence.";
+                    errorBox.style.display = 'block';
+                } else if (data.success) {
+                    window.location.href = data.redirect;
+                }
+            } catch(e) {}
+        }
+    });
+</script>
+</body>
+</html>
